@@ -1,8 +1,8 @@
-name: CI
+name: Nightly
 
 on:
-  push:
-  pull_request:
+  schedule:
+    - cron: '* * * * *'
 
 env:
   COLORTERM: 'yes'
@@ -16,18 +16,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python:
-          - "3.6"
-          - "3.8"
+        pulpcore:
+          - "~=3.6"
+          - "~=3.7"
+          - "~=3.8"
+          - "<4.0"
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python }}
+          python-version: 3.7
       - name: Install Test Dependencies
         run: pip install -r test_requirements.txt
-      - name: Lint code
-        run: make lint
       - name: Run tests
+        env:
+          PULPCORE_VERSION: {{ matrix.pulpcore }}
         run: .ci/run_container.sh make test
+

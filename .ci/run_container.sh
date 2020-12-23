@@ -1,6 +1,7 @@
 #!/bin/sh
 
 BASEPATH="$(dirname "$(readlink -f "$0")")"
+IMAGE="pulp/pulp-fedora31"
 
 if [ -z "${CONTAINER_RUNTIME+x}" ]
 then
@@ -12,7 +13,13 @@ then
   fi
 fi
 
-"${CONTAINER_RUNTIME}" run --rm --detach --name "pulp" --volume "${BASEPATH}/settings:/etc/pulp" --publish "8080:80" pulp/pulp-fedora31
+if [ -n "$PULPCORE_VERSION" ]
+then
+  "${CONTAINER_RUNTIME}" build -f "${BASEPATH}/Containerfile" -t pulp --build-arg PULPCORE_VERSION="$PULPCORE_VERSION"
+  IMAGE="pulp"
+fi
+
+"${CONTAINER_RUNTIME}" run --rm --detach --name "pulp" --volume "${BASEPATH}/settings:/etc/pulp" --publish "8080:80" "$IMAGE"
 
 echo "Wait for pulp to start."
 for _ in $(seq 10)
