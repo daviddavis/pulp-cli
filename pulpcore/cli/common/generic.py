@@ -107,6 +107,14 @@ version_option = click.option(
     expose_value=False,
 )
 
+label_select_option = click.option(
+    "--label-select",
+    "pulp_label_select",
+    help="Filter {entities} by a label search query.",
+    type=str,
+    cls=PulpOption,
+)
+
 ##############################################################################
 # Generic reusable commands
 
@@ -360,3 +368,38 @@ version_group.add_command(list_entities)
 version_group.add_command(show_version)
 version_group.add_command(destroy_version)
 version_group.add_command(repair_version)
+
+
+# Generic label command group
+@click.group(name="label")
+@pass_entity_context
+@pass_pulp_context
+@click.pass_context
+def label_group(ctx: click.Context, entity_ctx: PulpEntityContext, pulp_ctx: PulpContext) -> None:
+    """Manage labels for this resource"""
+    pass
+
+
+@label_group.command(name="set")
+@click.option("--name", required=True, help="Name of the entry")
+@click.option("--key", required=True, help="Key of the label")
+@click.option("--value", required=True, help="Value of the label")
+@pass_entity_context
+@pass_pulp_context
+def label_set(
+    pulp_ctx: PulpContext, entity_ctx: PulpEntityContext, name: str, key: str, value: str
+) -> None:
+    """Add or update a label"""
+    href = entity_ctx.find(name=name)["pulp_href"]
+    entity_ctx.set_label(href, key, value)
+
+
+@label_group.command(name="unset")
+@click.option("--name", required=True, help="Name of the entry")
+@click.option("--key", required=True, help="Key of the label")
+@pass_entity_context
+@pass_pulp_context
+def label_unset(pulp_ctx: PulpContext, entity_ctx: PulpEntityContext, name: str, key: str) -> None:
+    """Remove a label"""
+    href = entity_ctx.find(name=name)["pulp_href"]
+    entity_ctx.unset_label(href, key)
