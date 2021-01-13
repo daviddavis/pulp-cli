@@ -25,6 +25,7 @@ setup(
         "pulp_cli.plugins": [
             "core=pulpcore.cli.core",
             "file=pulpcore.cli.file",
+            "ansible=pulpcore.cli.ansible",
             "container=pulpcore.cli.container",
             "rpm=pulpcore.cli.rpm",
         ],
