@@ -1,16 +1,14 @@
-import os
 import subprocess
+from pathlib import Path
 
 import pytest
 
 TEST_NAMES = [
-    name[5:-3]
-    for name in os.listdir("tests/scripts")
-    if name.startswith("test_") and name.endswith(".sh")
+    str(name)[14:-3].replace("/", ".") for name in Path("tests/scripts").glob("**/test_*.sh")
 ]
 
 
 @pytest.mark.parametrize("test_name", TEST_NAMES)
 def test_script(test_name):
-    run = subprocess.run([os.path.join("tests", "scripts", "test_" + test_name + ".sh")])
+    run = subprocess.run([Path("tests", "scripts", test_name.replace(".", "/") + ".sh")])
     assert run.returncode == 0
