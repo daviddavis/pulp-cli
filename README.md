@@ -133,9 +133,9 @@ configured in `tests/scripts/config/pulp/settings.toml`.
 To run tests:
 
 ```
-make test                        # all tests
-pytest -k pulp_file              # tests for pulp_file
-pytest -k pulp_file.test_remote  # run tests/scripts/pulp_file/test_remote.sh
+make test                           # all tests
+pytest -m pulp_file                 # tests for pulp_file
+pytest -m pulp_file -k test_remote  # run an individual test (pulp_file's test_remote)
 ```
 
 ## Releasing
